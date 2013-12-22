@@ -51,3 +51,22 @@ exports['authorization tests'] = {
     this.openshift.authorizationToken(resultCallback);
   }
 };
+
+exports['user tests'] = {
+  setUp: function(done){
+    this.openshift = new OpenShift({username : process.env.OPENSHIFT_USERNAME,password : process.env.OPENSHIFT_PASSWORD});
+    done();
+  },
+  'should view user details' : function(test){
+    test.expect(4);
+    function resultCallback(error , result){
+      test.ok(!error , 'should be no error in fetching user details');
+      var jsonResult = JSON.parse(result);
+      test.equal(jsonResult.data.login,'shekhar.redhat@gmail.com','username should be shekhar.redhat@gmail.com');
+      test.equal(jsonResult.data.plan_id,'free','account is using free plan');
+      test.equal(jsonResult.data.plan_state , 'ACTIVE','account is active');
+      test.done();
+    }
+    this.openshift.showUser(resultCallback);
+  }
+};
