@@ -25,6 +25,8 @@ var OpenShift = require('../lib/openshift.js');
     test.ifError(value)
 */
 
+function noop() {}
+
 exports['authorization tests'] = {
   setUp: function(done) {
     this.openshift = new OpenShift({username : process.env.OPENSHIFT_USERNAME,password : process.env.OPENSHIFT_PASSWORD});
@@ -71,21 +73,24 @@ exports['user tests'] = {
   }
 };
 
-exports['domain listing tests'] = {
+exports['domain deletion tests'] = {
   setUp: function(done){
     this.openshift = new OpenShift({username : process.env.OPENSHIFT_USERNAME,password : process.env.OPENSHIFT_PASSWORD});
+    this.openshift.createDomain('onopenshiftcloud',noop);
     done();
   },
-  'should list all domains for a user' : function(test){
-    test.expect(4);
+  
+  'should delete domain' : function(test){
+    test.expect(3);
     function resultCallback(error , result){
+      console.log("\nError while deleting domain : " + error);
       test.ok(!error , 'there should not be any error');
       var jsonResult = JSON.parse(result);
       test.ok(jsonResult , 'result not null');
-      test.equal(jsonResult.data[0].name , 'onopenshiftcloud','domain name should be onopenshiftcloud');
-      test.equal(jsonResult.data[0].suffix , 'rhcloud.com','domain name suffix should be rhcloud.com');
+      test.ok(jsonResult.messages[0].text, 'message should be not null');
       test.done();
     }
-    this.openshift.listDomains(resultCallback);
+    this.openshift.deleteDomain('onopenshiftcloud',resultCallback);
   }
 };
+
