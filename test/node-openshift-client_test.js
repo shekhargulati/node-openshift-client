@@ -73,17 +73,49 @@ exports['user tests'] = {
   }
 };
 
-exports['domain deletion tests'] = {
+exports['domain tests'] = {
   setUp: function(done){
     this.openshift = new OpenShift({username : process.env.OPENSHIFT_USERNAME,password : process.env.OPENSHIFT_PASSWORD});
-    this.openshift.createDomain('onopenshiftcloud',noop);
+    console.log('\n in setUp()... ');
     done();
   },
   
+  'should create domain' : function(test){
+    test.expect(1);
+    function resultCallback(error , result){
+      test.ok(!error , 'there should not be any error');
+      var jsonResult = JSON.parse(result);
+      test.done();
+    }
+    this.openshift.createDomain('onopenshiftcloud',resultCallback);
+  },
+
+  'should list all domains for a user' : function(test){
+    test.expect(4);
+    function resultCallback(error , result){
+      test.ok(!error , 'there should not be any error');
+      var jsonResult = JSON.parse(result);
+      test.ok(jsonResult , 'result not null');
+      test.equal(jsonResult.data[0].name , 'onopenshiftcloud','domain name should be onopenshiftcloud');
+      test.equal(jsonResult.data[0].suffix , 'rhcloud.com','domain name suffix should be rhcloud.com');
+      test.done();
+    }
+    this.openshift.listDomains(resultCallback);
+  },
+  'should view domain details' : function(test){
+    test.expect(3);
+    function resultCallback(error , result){
+      test.ok(!error , 'there should not be any error');
+      var jsonResult = JSON.parse(result);
+      test.ok(jsonResult , 'result not null');
+      test.equal(jsonResult.data.name,'onopenshiftcloud','domain name should be onopenshiftcloud');
+      test.done();
+    }
+    this.openshift.viewDomainDetails('onopenshiftcloud',resultCallback);
+  },
   'should delete domain' : function(test){
     test.expect(3);
     function resultCallback(error , result){
-      console.log("\nError while deleting domain : " + error);
       test.ok(!error , 'there should not be any error');
       var jsonResult = JSON.parse(result);
       test.ok(jsonResult , 'result not null');
@@ -93,4 +125,3 @@ exports['domain deletion tests'] = {
     this.openshift.deleteDomain('onopenshiftcloud',resultCallback);
   }
 };
-
