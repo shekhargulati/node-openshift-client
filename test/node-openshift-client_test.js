@@ -25,32 +25,29 @@ var OpenShift = require('../lib/openshift.js');
     test.ifError(value)
 */
 
-exports.openshift = {
+exports['authorization tests'] = {
   setUp: function(done) {
     this.openshift = new OpenShift({username : process.env.OPENSHIFT_USERNAME,password : process.env.OPENSHIFT_PASSWORD});
     done();
   },
   'should fetch autorization token': function(test) {
-    
     test.expect(2);
     function resultCallback(error , result){
-      // console.log(JSON.parse(result));
       test.ok(!error , 'there should not be any error');
       test.ok(result,'should be not null');
       test.done();
     }
     this.openshift.authorizationToken(resultCallback);
   },
-  'should fetch user details' : function(test){
-    test.expect(4);
+  'should get error when credentials are wrong' : function(test){
+    this.openshift = new OpenShift({username : 'test',password : 'test'});
+    test.expect(3);
     function resultCallback(error , result){
-      test.ok(!error , 'there should not be any error');
-      var jsonResult = JSON.parse(result);
-      test.equal(jsonResult.data.login,'shekhar.redhat@gmail.com','username should be shekhar.redhat@gmail.com');
-      test.equal(jsonResult.data.plan_id,'free','account is using free plan');
-      test.equal(jsonResult.data.plan_state , 'ACTIVE','account is active');
+      test.ok(error , 'should fail as credentials are wrong');
+      test.equals(error , 'Error: HTTP 401', 'should fail as credentials are wrong');
+      test.equal(result,'HTTP Basic: Access denied.\n','should get access denied');
       test.done();
     }
-    this.openshift.showUser(resultCallback);
+    this.openshift.authorizationToken(resultCallback);
   }
 };
