@@ -137,6 +137,19 @@ exports['domain application tests'] = {
     this.openshift.createApplication('onopenshiftcloud',app_options, resultCallback);
   },
 
+  'should list all the supported cartridges' : function(test){
+    console.log('\n Running test \'should list all the supported cartridges\'');
+    test.expect(3);
+    function resultCallback(error , result){
+      test.ok(!error, 'there should not be any error');
+      var jsonResult = JSON.parse(result);
+      test.ok(jsonResult,'listCartridges() result should be truthy');
+      test.equal(jsonResult.data.length ,29, 'number of cartridges should be 29');
+      test.done();
+    }
+    this.openshift.listCartridges(resultCallback);
+  },
+
   'should delete application' : function(test){
     console.log('\n Running test \'should delete application\'');
     test.expect(3);
@@ -161,4 +174,5 @@ exports['domain application tests'] = {
     }
     this.openshift.deleteDomain('onopenshiftcloud',resultCallback);
   }
+
 };
