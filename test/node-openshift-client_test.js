@@ -25,6 +25,9 @@ var OpenShift = require('../lib/openshift.js');
     test.ifError(value)
 */
 
+var openshift = new OpenShift({username : process.env.OPENSHIFT_USERNAME,password : process.env.OPENSHIFT_PASSWORD});
+openshift.deleteDomain('onopenshiftcloud');
+
 exports['authorization tests'] = {
   setUp: function(done) {
     this.openshift = new OpenShift({username : process.env.OPENSHIFT_USERNAME,password : process.env.OPENSHIFT_PASSWORD});
@@ -148,6 +151,19 @@ exports['domain application tests'] = {
       test.done();
     }
     this.openshift.listCartridges(resultCallback);
+  },
+
+  'should add mongodb cartridge to application' : function(test){
+    console.log('\n Running test \'should add mongodb cartridge to application\'');
+    test.expect(3);
+    function resultCallback(error , result){
+      test.ok(!error, 'there should not be any error');
+      var jsonResult = JSON.parse(result);
+      test.ok(jsonResult,'addCartridge() result should be truthy');
+      test.ok(jsonResult.status, 'created','status should be created');
+      test.done();
+    }
+    this.openshift.addCartridge('onopenshiftcloud','myfirstapp','mongodb-2.2',resultCallback);
   },
 
   'should delete application' : function(test){
