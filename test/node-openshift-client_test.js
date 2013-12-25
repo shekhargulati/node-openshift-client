@@ -166,6 +166,18 @@ exports['domain application tests'] = {
     this.openshift.addCartridge('onopenshiftcloud','myfirstapp','mongodb-2.2',resultCallback);
   },
 
+  'should view cartridge details' : function(test){
+    console.log('\n Running test \'should view cartridge details\'');
+    test.expect(2);
+    function resultCallback(error , result){
+      test.ok(!error , 'there should not be any error');
+      var jsonResult = JSON.parse(result);
+      test.ok(jsonResult , 'result not null');
+      test.done();
+    }
+    this.openshift.viewCartridgeDetails('onopenshiftcloud','myfirstapp','mongodb-2.2',resultCallback);
+  },
+
   'should delete application' : function(test){
     console.log('\n Running test \'should delete application\'');
     test.expect(3);
